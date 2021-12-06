@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+    <div id="main-container">
+        <header>
+            <h1>To-Do Agenda</h1>
+        </header>
+        <section id="sidebar">
+            <div id="sidebar-container">
+                <div id="inbox">
+                    <h2 class="sidebar-header">Inbox</h2>
+                    <div class="sidebar-item sidebar-active" id="all-filter">
+                        <p id="task-category">All Tasks</p>
+                        <p id="all-tasks">0</p>
+                    </div>
+                    <div class="sidebar-item" id="today-filter">
+                        <p>Today</p>
+                        <p id="today-tasks">0</p>
+                    </div>
+                    <div class="sidebar-item" id="week-filter">
+                        <p>Week</p>
+                        <p id="week-tasks">0</p>    
+                    </div>
+                </div>
+                <div id="projects">
+                    <h2 class="sidebar-header">Projects</h2>
+                    <div id="projects-inbox"></div>
+                    <div id="add-new-project-div">
+                        <span>+</span>
+                        <span>Add New Project</span>
+                    </div>
+                    <div id="project-input-div">
+                        <input type="text" id="add-project-input">
+                        <div>
+                            <button id="create-project">Add Project</button>
+                            <button id="cancel-project">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+        <section id="task-list">
+            <div>
+                <h2 id="header-task">All Tasks</h2>
+                <div id="task-list-container">
+
+                </div>
+                <div id="add-new-task-div">
+                    <span>+</span>
+                    <span>Add New Task</span>
+                </div>
+
+                <div>
+                    <form id="add-task-form">
+                        <input type="text"  id="new-task-name" placeholder='Name'/>
+                        <textarea name="" id="new-task-details" cols="30" rows="3" placeholder='Description'></textarea>
+                        <div id="task-date-project-row">
+                            <div id="new-date-container">
+                                <p>Due Date</p>
+                                <input type="date" id="new-due-date">
+                            </div>
+                            <div id="new-project-container">
+                                <div>Project</div>
+                                <div id="new-task-project">General Tasks</div>
+                                <div>
+                                    <ul id="new-task-project-list" class="project-dropdown">
+                                        <li class="project-option">General Tasks</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="add-task-buttons">
+                            <button id="add-task">Add Task</button>
+                            <button id="cancel-task">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div id="overlay"></div>
+    <script src="main.js"></script>
+</body>
+</html>
