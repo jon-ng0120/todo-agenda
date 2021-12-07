@@ -23,7 +23,6 @@ class Task {
 class TaskUI {
     // Creating list view DOM element
     static createElement(task) {
-
         const taskElement = document.createElement('div');
         taskElement.classList.add('task');
         taskElement.setAttribute('data-id', task.id);
@@ -174,7 +173,6 @@ class TaskLocalStorage {
         const tasks = this.getTasks();
         tasks.push(task);
         localStorage.setItem('tasks', JSON.stringify(tasks));
-        ProjectCount.addProjectCount(task);
         ProjectCount.updateProjectCounts();
     }
 
@@ -260,15 +258,6 @@ class ProjectLocalStorage {
 
 // Project Count Class
 class ProjectCount {
-    static addProjectCount(task) {
-        const projects = ProjectLocalStorage.getProjects();
-        if (task.project !== '') {
-            const matchingIndex = projects.findIndex(proj => proj.name == task.project)
-            projects[matchingIndex].tasks.push(task);
-            localStorage.setItem('projects', JSON.stringify(projects));
-        }
-    }
-
     static removeProjectCount(id) {
         const taskId = id;
         const tasks = TaskLocalStorage.getTasks();
@@ -276,22 +265,24 @@ class ProjectCount {
         if (taskProject.length > 0) {
             const projects = ProjectLocalStorage.getProjects();
             const matchingProject = projects.findIndex(proj => proj.name == taskProject);
-            matchingProject
             const matchingProjectTasks = projects[matchingProject].tasks;
             matchingProjectTasks.splice(matchingProjectTasks.findIndex(task => task.id == taskId), 1)
             localStorage.setItem('projects', JSON.stringify(projects));
         }  
     }
 
+
     static updateProjectCounts() {
         const projects = ProjectLocalStorage.getProjects();
- 
+        const tasks = TaskLocalStorage.getTasks();
         projects.forEach(project => {
-            const tasks = TaskLocalStorage.getTasks();
             const projectCount = tasks.filter(task => task.project == project.name)
+            console.log(projectCount.map(proj => proj.name))
+            project.tasks = projectCount.map(proj => proj)
             const domProjectCount = document.querySelector(`#${project.name}-count`);
             domProjectCount.textContent = projectCount.length
         })
+        localStorage.setItem('projects', JSON.stringify(projects));
     }
 }
 
@@ -355,6 +346,8 @@ document.querySelector('#add-task').addEventListener('click', (e) => {
     TaskLocalStorage.addTask(task);
     TaskCounts.updateAllCount();
     TaskCounts.updateDayCounts();
+    taskForm.style.display = 'none';
+    addTaskDiv.style.display = 'block';
     overlay.classList.remove('active-overlay');
 });
 
@@ -436,6 +429,9 @@ document.addEventListener('click', (e) => {
         if (taskProject == 'General Tasks') taskProject = ''
 
         EditTask.editTask(taskId,taskName.value, taskDetails.value,taskDueDate.value, taskProject);
+        TaskCounts.updateAllCount();
+        TaskCounts.updateDayCounts();
+        ProjectCount.updateProjectCounts();
     }
 })
 
