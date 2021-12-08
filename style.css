@@ -211,17 +211,36 @@ input[type='date'] {
     align-items: baseline;
 }
 
+#new-task-error,
+#edit-task-error {
+    display: none;
+    background-color: rgb(255, 192, 192);
+    color: rgb(255, 25, 25);
+    font-weight: 400;
+    padding: 0.3rem 0.4rem;
+}
+
+#new-project-error {
+    display: none;
+    background-color: rgb(255, 192, 192);
+    color: rgb(255, 25, 25);
+    font-weight: 400;
+    padding: 0.2rem;
+    width: 100%;
+}
+
 #add-project-input {
     padding: 0.3rem 0.2rem;
     margin-top: 1rem;
-    margin-bottom: 1rem;
     border-radius: 3px;
     border: 1px rgb(168, 168, 168) solid;
     outline: none;
+    width: 100%;
 }
 
 #project-input-div {
     display: none;
+    width: 80%;
 }
 
 #add-new-project-div {
@@ -231,6 +250,10 @@ input[type='date'] {
 
 #add-new-project-div:hover {
     cursor: pointer;
+}
+
+#project-buttons {
+    margin-top: 1rem;
 }
 
 #new-task-project,
@@ -336,3 +359,16 @@ button:hover {
 textarea {
     resize: none;
 }
+
+.hide {
+    animation: hideAnimation 0s ease-in 5s;
+    animation-fill-mode: forwards;
+  }
+  
+  @keyframes hide {
+    to {
+      visibility: hidden;
+      width: 0;
+      height: 0;
+    }
+  }

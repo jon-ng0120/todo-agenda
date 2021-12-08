@@ -1,5 +1,4 @@
 'use strict'
-
 const { format, differenceInCalendarDays, lightFormat } = require("date-fns");
 const taskContainer = document.querySelector('#task-list-container');
 const overlay = document.querySelector('#overlay');
@@ -57,6 +56,19 @@ class TaskUI {
             taskList.removeChild(taskList.lastChild);
           }
     }
+
+    static clearTaskForm() {
+        const taskName = document.querySelector('#new-task-name');
+        const taskDetails = document.querySelector('#new-task-details');
+        const taskDate = document.querySelector('#new-due-date');
+        const taskProject = document.querySelector('#new-task-project');
+        taskName.value = '';
+        taskDetails.value = '';
+        taskDate.value = '';
+        taskProject.textContent = 'General Tasks';
+        const errorMessage = document.querySelector('#new-task-error');
+        errorMessage.style.display = 'none';
+    }
 };
 
 class EditTask extends TaskUI {
@@ -84,6 +96,7 @@ class EditTask extends TaskUI {
             <form>
                 <div class="edit-task-row-1">
                     <input type="text" placeholder="Name" class="edit-task-name" value="${task.name}">
+                    <div id="edit-task-error">Please enter a task name</div>
                     <textarea class="edit-task-details" name="" id="" cols="30" rows="3" placeholder="Description">${task.details}</textarea>
                 </div>
                 <div class="edit-task-row-2">
@@ -212,25 +225,21 @@ class ProjectUI {
     }
 
     static addProjectDropdown(project) {
-        const projectDropdowns = document.querySelectorAll('.project-dropdown');
-        projectDropdowns.forEach(element => {
-            const projectOption = document.createElement('li');
-            projectOption.classList.add('project-option')
-            projectOption.textContent = project.name;
-            element.appendChild(projectOption);
-        });
+        const projectDropdowns = document.querySelector('#new-task-project-list');
+        const projectOption = document.createElement('li');
+        projectOption.classList.add('project-option')
+        projectOption.textContent = project.name;
+        projectDropdowns.appendChild(projectOption);
     }
 
     static createProjectDropdown() {
         const projects = ProjectLocalStorage.getProjects();
-        const projectDropdowns = document.querySelectorAll('.project-dropdown');
-        projectDropdowns.forEach(ele => {
-            projects.forEach(proj => {
-                const projectOption = document.createElement('li');
-                projectOption.classList.add('project-option', 'edit-project-option')
-                projectOption.textContent = proj.name;
-                ele.appendChild(projectOption);
-            })
+        const projectDropdowns = document.querySelector('.edit-task-project-list');
+        projects.forEach(proj => {
+            const projectOption = document.createElement('li');
+            projectOption.classList.add('project-option', 'edit-project-option')
+            projectOption.textContent = proj.name;
+            projectDropdowns.appendChild(projectOption);
         })
     }
 };
@@ -271,13 +280,11 @@ class ProjectCount {
         }  
     }
 
-
     static updateProjectCounts() {
         const projects = ProjectLocalStorage.getProjects();
         const tasks = TaskLocalStorage.getTasks();
         projects.forEach(project => {
             const projectCount = tasks.filter(task => task.project == project.name)
-            console.log(projectCount.map(proj => proj.name))
             project.tasks = projectCount.map(proj => proj)
             const domProjectCount = document.querySelector(`#${project.name}-count`);
             domProjectCount.textContent = projectCount.length
@@ -338,17 +345,22 @@ document.querySelector('#add-task').addEventListener('click', (e) => {
     const dueDate = document.querySelector('#new-due-date').value;
     let project = document.querySelector('#new-task-project').textContent;
     if (project == 'General Tasks') project = ''
-    const task = new Task(name, details, dueDate, project);
-
-    if (checkFilter(task)) {
-        taskContainer.appendChild(TaskUI.createElement(task));
+    if (name == '') {
+        const errorMessage = document.querySelector('#new-task-error');
+        errorMessage.style.display = 'block';
+    } else {
+        const task = new Task(name, details, dueDate, project);
+        if (checkFilter(task)) {taskContainer.appendChild(TaskUI.createElement(task));}
+        const errorMessage = document.querySelector('#new-task-error');
+        errorMessage.style.display = 'none';
+        TaskLocalStorage.addTask(task);
+        TaskCounts.updateAllCount();
+        TaskCounts.updateDayCounts();
+        taskForm.style.display = 'none';
+        addTaskDiv.style.display = 'block';
+        overlay.classList.remove('active-overlay');
+        TaskUI.clearTaskForm();
     }
-    TaskLocalStorage.addTask(task);
-    TaskCounts.updateAllCount();
-    TaskCounts.updateDayCounts();
-    taskForm.style.display = 'none';
-    addTaskDiv.style.display = 'block';
-    overlay.classList.remove('active-overlay');
 });
 
 // Complete task
@@ -420,31 +432,37 @@ document.addEventListener('click', (e) => {
     if (e.target.classList.contains('edit-task-add')) {
         e.preventDefault();
         const editForm = document.querySelector('.edit-task-form')
+        const task = e.target.closest('[data-id]');
         const taskId = editForm.closest('[data-id]').getAttribute('data-id');
         const taskName = document.querySelector('.edit-task-name');
         const taskDetails = document.querySelector('.edit-task-details');
         const taskDueDate = document.querySelector('.edit-due-date');
         let taskProject = document.querySelector('.edit-task-project').textContent;
 
-        if (taskProject == 'General Tasks') taskProject = ''
-
-        EditTask.editTask(taskId,taskName.value, taskDetails.value,taskDueDate.value, taskProject);
-        TaskCounts.updateAllCount();
-        TaskCounts.updateDayCounts();
-        ProjectCount.updateProjectCounts();
+        if (document.querySelector('.edit-task-name').value == '') {
+            document.querySelector('#edit-task-error').style.display = 'block';
+        } else {
+            if (taskProject == 'General Tasks') taskProject = '';
+            document.querySelector('#edit-task-error').style.display = 'none';
+            EditTask.editTask(taskId,taskName.value, taskDetails.value, taskDueDate.value, taskProject);
+            EditTask.flipTaskView(task, taskId)
+            TaskCounts.updateAllCount();
+            TaskCounts.updateDayCounts();
+            ProjectCount.updateProjectCounts();
+            overlay.classList.remove('active-overlay');
+        }
+        
+        
     }
 })
 
 document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('edit-task-cancel') || e.target.classList.contains('edit-task-add')) {
+    if (e.target.classList.contains('edit-task-cancel')) {
         e.preventDefault();
         const task = e.target.closest('[data-id]');
         const taskId = task.getAttribute('data-id');
         EditTask.flipTaskView(task, taskId);
         overlay.classList.remove('active-overlay');
-        TaskCounts.updateAllCount();
-        TaskCounts.updateDayCounts();
-        ProjectCount.updateProjectCounts();
     }
 });
 
@@ -452,14 +470,19 @@ document.addEventListener('click', (e) => {
 // EVENT LISTENERS - Projects
 // Adding a project to UI
 document.querySelector('#create-project').addEventListener('click', () => {
-    const projectName = document.querySelector('#add-project-input').value;
-    if (projectName == '') {
-        alert("Need project name")
+    const projectName = document.querySelector('#add-project-input');
+    if (projectName.value == '') {
+        document.querySelector('#new-project-error').style.display = 'block';
     } else {
-        const project = new Project(projectName);
+        const project = new Project(projectName.value);
         ProjectUI.createProjectElement(project);
         ProjectLocalStorage.addProject(project);
         ProjectUI.addProjectDropdown(project);
+        document.querySelector('#new-project-error').style.display = 'none';
+        projectName.value = '';
+        document.querySelector('#project-input-div').style.display = 'none';
+        document.querySelector('#add-new-project-div').style.display = 'block';
+        document.querySelector('#new-project-error').style.display = 'none';
     }
 });
 
@@ -483,6 +506,7 @@ document.querySelector('#cancel-task').addEventListener('click', (e) => {
     taskForm.style.display = 'none';
     addTaskDiv.style.display = 'block';
     overlay.classList.remove('active-overlay');
+    TaskUI.clearTaskForm();
 })
 
 document.addEventListener('click', (e) => {
@@ -531,6 +555,7 @@ document.querySelector('#add-new-project-div').addEventListener('click', () => {
 document.querySelector('#cancel-project').addEventListener('click', () => {
     document.querySelector('#project-input-div').style.display = 'none';
     document.querySelector('#add-new-project-div').style.display = 'block';
+    document.querySelector('#new-project-error').style.display = 'none';
 })
 
 document.querySelector('#sidebar-container').addEventListener('click', (e) => {
