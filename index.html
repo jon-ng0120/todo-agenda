@@ -41,7 +41,8 @@
                     </div>
                     <div id="project-input-div">
                         <input type="text" id="add-project-input">
-                        <div>
+                        <div id="new-project-error">Please enter a project name</div>
+                        <div id="project-buttons">
                             <button id="create-project">Add Project</button>
                             <button id="cancel-project">Cancel</button>
                         </div>
@@ -64,6 +65,7 @@
                 <div>
                     <form id="add-task-form">
                         <input type="text"  id="new-task-name" placeholder='Name'/>
+                        <div id="new-task-error">Please enter a task name</div>
                         <textarea name="" id="new-task-details" cols="30" rows="3" placeholder='Description'></textarea>
                         <div id="task-date-project-row">
                             <div id="new-date-container">
