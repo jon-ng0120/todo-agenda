@@ -1,10 +1,13 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
     font-family: 'Nunito', sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 header {
@@ -12,6 +15,10 @@ header {
     padding: 1rem;
     background-color: #0e5f6a;
     color: rgb(235, 235, 235);
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    justify-content: start;
 }
 
 input[type='date'] {
@@ -21,6 +28,11 @@ input[type='date'] {
     color: white;
     border: none;
 }
+
+#menu {
+    visibility: hidden;
+}
+
 
 .active-overlay {
     background-color: rgba(87, 87, 87, 0.4);
@@ -372,3 +384,73 @@ textarea {
       height: 0;
     }
   }
+
+
+@media only screen and (max-width: 1150px) {
+    #task-list {
+        width: 35rem;
+    }
+
+    #add-task-form {
+        width: 33rem;
+        margin: auto;
+    }
+}
+
+@media only screen and (max-width: 896px) {
+    #main-container {
+        grid-template-areas: 
+        "header header"
+        "task-list task-list"
+    ;
+    }
+
+    #menu {
+        padding: 0.2rem;
+        visibility: visible;
+        margin-right: 1rem;
+    }
+
+    #menu:hover {
+        cursor: pointer;
+    }
+
+    #sidebar {
+        position: absolute;
+        overflow: scroll;
+        height: 0;
+        width: 100%;
+        z-index: 2;
+        top: 4.4rem;
+    }
+    
+    #task-list {
+        position: relative;
+    }
+
+}
+
+
+@media only screen and (max-width: 575px) {
+    #task-list {
+        width: 28rem;
+    }
+
+    #add-task-form {
+        width: 26rem;
+        margin: auto;
+    }
+
+}
+
+@media only screen and (max-width: 375px) {
+    #task-list {
+        width: 20rem;
+    }
+
+    #add-task-form {
+        width: 21rem;
+        margin: auto;
+    }
+
+}

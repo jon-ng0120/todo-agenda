@@ -602,6 +602,15 @@ const checkFilter = (task) => {
     }
 }
 
+document.querySelector('#menu').addEventListener('click', () => {
+    const sidebar = document.querySelector('#sidebar')
+    if (sidebar.offsetHeight == 0) {
+        sidebar.style.height = '100vh';
+    } else {
+        sidebar.style.height = 0;
+    }
+})
+
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('overlay')) alert('overlay')
 })
