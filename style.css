@@ -19,6 +19,8 @@ header {
     grid-auto-flow: column;
     align-items: center;
     justify-content: start;
+    width: 100%;
+    font-size: 1rem;
 }
 
 input[type='date'] {
@@ -449,8 +451,12 @@ textarea {
     }
 
     #add-task-form {
-        width: 21rem;
+        width: 18rem;
         margin: auto;
     }
 
+    #task-date-project-row {
+        flex-direction: column;
+        margin: 0 auto;
+    }
 }
